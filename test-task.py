@@ -63,33 +63,30 @@ class Log:
 class Sync:
     def __init__(self, source_dir, replica_dir, logger):
         """
-        The function initializes an object with source directory, replica directory, and logger
-        attributes.
+        The function is a Python constructor that initializes attributes for syncing files and directories
+        between source and replica directories.
 
-        :param source_dir: The `source_dir` parameter in the `__init__` method is typically used to
-        specify the directory path where the source files are located. This parameter allows you to
-        provide the location of the source files that will be used or manipulated within the class or
-        object
+        :param source_dir: The `source_dir` parameter represents the directory from which files will be
+        copied for synchronization
         :param replica_dir: The `replica_dir` parameter in the `__init__` method is typically used to
-        specify the directory where a replica or copy of the source files will be stored. This parameter
-        allows the class instance to know where to create or locate the replica files during the
-        execution of the program
-        :param logger: The `logger` parameter in the `__init__` method is typically used to pass a
-        logging object that can be used to record events, errors, and other information during the
-        execution of the class methods. This allows for better debugging and monitoring of the
-        application
+        specify the directory where the replicated or synchronized files will be stored. This parameter
+        represents the destination directory where files from the `source_dir` will be copied or
+        synchronized to
+        :param logger: The `logger` parameter in the `__init__` method is typically used to pass a logging
+        object that can be used to record events, errors, and other information during the execution of the
+        class methods. This allows for better debugging and monitoring of the application. The logger object
+        can be configured to
         """
         self.source_dir = source_dir
         self.replica_dir = replica_dir
         self.logger = logger
+        self.synced_files = set()  # Store synced files and directories
 
     def synchronize(self):
         """
-        The `synchronize` function synchronizes the replica folder to match the source folder by
-        creating missing folders, copying files from the source to the replica, and removing files from
-        the replica that are no longer in the source.
+        The `synchronize` function synchronizes a replica folder with a source folder, logging creations
+        and deletions.
         """
-
         # Create source folder if it doesn't exist
         if not os.path.exists(self.source_dir):
             os.makedirs(self.source_dir)
@@ -106,6 +103,17 @@ class Sync:
             for item in os.listdir(self.replica_dir)
         }
 
+        # Track current files in source directory
+        current_source_files = set(os.listdir(self.source_dir))
+
+        # Log newly created files and directories in the source
+        new_files = current_source_files - self.synced_files  # Files created since the last sync
+        for new_file in new_files:
+            self.logger.log_message(f"New file or directory created in source: {new_file}", YELLOW)
+
+        # Update the synced files list with the current state of the source directory
+        self.synced_files = current_source_files
+
         # Copy files from source to replica
         for item in os.listdir(self.source_dir):
             src_path = os.path.join(self.source_dir, item)
@@ -116,26 +124,18 @@ class Sync:
                 if not os.path.exists(dest_path):
                     try:
                         shutil.copytree(src_path, dest_path)
-                        self.logger.log_message(
-                            f"Copied directory: {src_path} to {dest_path}", BLUE
-                        )
+                        self.logger.log_message(f"Copied directory: {src_path} to {dest_path}", BLUE)
                     except Exception as e:
-                        self.logger.log_message(
-                            f"Error copying directory {src_path}: {e}", RED
-                        )
+                        self.logger.log_message(f"Error copying directory {src_path}: {e}", RED)
                 else:
                     # If the directory exists, recursively synchronize it
                     self.synchronize_directory(src_path, dest_path)
             else:
                 # If the item is a file
                 try:
-                    if not os.path.exists(dest_path) or os.path.getmtime(
-                        src_path
-                    ) > os.path.getmtime(dest_path):
+                    if not os.path.exists(dest_path) or os.path.getmtime(src_path) > os.path.getmtime(dest_path):
                         shutil.copy2(src_path, dest_path)
-                        self.logger.log_message(
-                            f"Copied file: {src_path} to {dest_path}", BLUE
-                        )
+                        self.logger.log_message(f"Copied file: {src_path} to {dest_path}", BLUE)
                 except Exception as e:
                     self.logger.log_message(f"Error copying file {src_path}: {e}", RED)
 
@@ -148,9 +148,7 @@ class Sync:
                 try:
                     if os.path.isdir(replica_path):
                         shutil.rmtree(replica_path)  # Remove the directory
-                        self.logger.log_message(
-                            f"Removed directory: {replica_path}", RED
-                        )
+                        self.logger.log_message(f"Removed directory: {replica_path}", RED)
                     else:
                         os.remove(replica_path)  # Remove the file
                         self.logger.log_message(f"Removed file: {replica_path}", RED)
@@ -159,18 +157,16 @@ class Sync:
 
     def synchronize_directory(self, source_dir, dest_dir):
         """
-        The function `synchronize_directory` recursively synchronizes the contents of a source directory
-        with a destination directory, copying files and directories as needed and logging messages about
-        the synchronization process.
+        The `synchronize_directory` function recursively copies directories and files from a source
+        directory to a destination directory, logging messages for each operation.
 
-        :param source_dir: The `source_dir` parameter in the `synchronize_directory` method represents
-        the directory whose contents you want to synchronize with another directory. This method
-        recursively goes through all the files and subdirectories in the `source_dir` and copies them to
-        the corresponding locations in the `dest_dir`. If a file
+        :param source_dir: The `source_dir` parameter in the `synchronize_directory` method represents the
+        directory from which you want to synchronize files and directories. It is the source directory
+        containing the items that you want to copy or synchronize with the destination directory
         :param dest_dir: The `dest_dir` parameter in the `synchronize_directory` method represents the
-        destination directory where the contents from the `source_dir` will be synchronized to. It is
-        the directory where the files and subdirectories from the `source_dir` will be copied to or
-        updated based on the comparison of modification
+        destination directory where files and directories from the `source_dir` will be synchronized to. It
+        is the directory where the files and directories from the `source_dir` will be copied to or updated
+        based on the comparison of modification
         """
         for item in os.listdir(source_dir):
             src_path = os.path.join(source_dir, item)
@@ -180,29 +176,18 @@ class Sync:
                 if not os.path.exists(dest_path):
                     try:
                         shutil.copytree(src_path, dest_path)
-                        self.logger.log_message(
-                            f"Copied directory: {src_path} to {dest_path}", BLUE
-                        )
+                        self.logger.log_message(f"Copied directory: {src_path} to {dest_path}", BLUE)
                     except Exception as e:
-                        self.logger.log_message(
-                            f"Error copying directory {src_path}: {e}", RED
-                        )
+                        self.logger.log_message(f"Error copying directory {src_path}: {e}", RED)
                 else:
-                    self.synchronize_directory(
-                        src_path, dest_path
-                    )  # Recursively synchronize
+                    self.synchronize_directory(src_path, dest_path)  # Recursively synchronize
             else:
                 try:
-                    if not os.path.exists(dest_path) or os.path.getmtime(
-                        src_path
-                    ) > os.path.getmtime(dest_path):
+                    if not os.path.exists(dest_path) or os.path.getmtime(src_path) > os.path.getmtime(dest_path):
                         shutil.copy2(src_path, dest_path)
-                        self.logger.log_message(
-                            f"Copied file: {src_path} to {dest_path}", BLUE
-                        )
+                        self.logger.log_message(f"Copied file: {src_path} to {dest_path}", BLUE)
                 except Exception as e:
                     self.logger.log_message(f"Error copying file {src_path}: {e}", RED)
-
 
 def main():
     """
@@ -226,8 +211,12 @@ def main():
     sync = Sync(args.source, args.replica, logger)
 
     while True:
-        sync.synchronize()
-        time.sleep(args.interval)
+        try:
+            sync.synchronize()
+            time.sleep(args.interval)
+        except KeyboardInterrupt:
+            print("Exiting Program...")
+            break
 
 
 if __name__ == "__main__":
