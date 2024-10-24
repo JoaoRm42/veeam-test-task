@@ -7,12 +7,12 @@ The synchronization happens periodically, and all file operations are logged in 
 ## Table of Contents
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [How It Works](#howItWorks)
+- [How It Works](#how-it-works)
 - [Command-Line Arguments](#command-line-arguments)
 - [Usage](#usage)
-- [Example Workflow](#exampleworkflow)
+- [Example Workflow](#example-workflow)
 - [Logging](#logging)
-- [Handling Errors](#handlingerrors)
+- [Handling Errors](#handling-errors)
 - [Customization](#customization)
 
 ## Features
