@@ -8,7 +8,7 @@ The synchronization happens periodically, and all file operations are logged in 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [How It Works](#howItWorks)
-- [Command-Line Arguments](#command-linesrguments)
+- [Command-Line Arguments](#Command-LineArguments)
 - [Usage](#usage)
 - [Example Workflow](#exampleworkflow)
 - [Logging](#logging)
