@@ -16,13 +16,13 @@ The synchronization happens periodically, and all file operations are logged in 
 - [Customization](#customization)
 
 ## Features
-Real-time synchronization: Ensures that the replica folder always mirrors the source folder.
-File and folder creation: New files or directories in the source are copied to the replica.
-File modification: Files in the replica are updated if their source counterpart is modified.
-File deletion: Files or directories removed from the source are also removed from the replica.
-Logging: All file operations (creation, update, deletion) are logged in both the terminal and a log file.
-Customizable synchronization interval: You can set how often the synchronization occurs (in seconds).
-Graceful shutdown: The program can be safely stopped with ```Ctrl+C```.
+- Real-time synchronization: Ensures that the replica folder always mirrors the source folder.
+- File and folder creation: New files or directories in the source are copied to the replica.
+- File modification: Files in the replica are updated if their source counterpart is modified.
+- File deletion: Files or directories removed from the source are also removed from the replica.
+- Logging: All file operations (creation, update, deletion) are logged in both the terminal and a log file.
+- Customizable synchronization interval: You can set how often the synchronization occurs (in seconds).
+- Graceful shutdown: The program can be safely stopped with ```Ctrl+C```.
 
 ## Prerequisites
 - Python 3.x
