@@ -81,18 +81,18 @@ In this example:
 - ```60```: The synchronization interval (in seconds).
 - ```/path/to/log.txt```: The file where logs will be saved.
 
-3. Stop the script:
+3. **Stop the script**:
 
 The script will run continuously, synchronizing the two folders at the given interval. To stop it, press ```Ctrl+C```.
 
 # Example Workflow
-1. Initial Sync:
+1. **Initial Sync**:
 
 - The replica folder is created if it doesn't exist.
 - All files and subdirectories from the source folder are copied to the replica.
 - Any changes (new files, modifications, or deletions) are logged.
 
-2. Subsequent Syncs:
+2. **Subsequent Syncs**:
 
 - The script will detect any new files or modifications in the source and update the replica accordingly.
 - Files or directories removed from the source will also be deleted from the replica.
@@ -100,14 +100,14 @@ The script will run continuously, synchronizing the two folders at the given int
 # Logging
 All operations (copying, deleting, etc.) are logged in two ways:
 
-1. Terminal: Color-coded messages make it easy to see what actions are being performed:
+1. **Terminal**: Color-coded messages make it easy to see what actions are being performed:
    
 - **Green**: Folder creation
 - **Yellow**: New files in the source
 - **Blue**: Files and directories copied
 - **Red**: Errors or deletions
 
-2. Log File: The same messages are written to the log file without colors for easy review later.
+2. **Log File**: The same messages are written to the log file without colors for easy review later.
 
 # Handling Errors
 If there are any issues with copying or deleting files (such as permission errors), the error will be logged in both the terminal and the log file with a red message.
